@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" href="observer.css">
+    <script src="observer.js"></script>
+    <script src = "js/jquery.js"></script>
+    <script src = "js/FileSaver.js"></script>
+    <script src =  "outputbytes.js"></script>
+<body>
+
+    <h1>Observed emotions</h1>
+    <div class="btn-group">
+        <button id = "Happiness" onclick = "action(this.id)">Happiness</button>
+        <button id = "Laughing" onclick = "action(this.id)">Laughing</button>
+        <button id = "Applause" onclick = "action(this.id)">Applause</button>
+        <button id = "Surprise" onclick = "action(this.id)">Surprise</button>
+        <button id = "Booing" onclick = "action(this.id)">Booing</button>
+        <button id = "Stomping" onclick = "action(this.id)">Stomping</button>
+        <button id = "Anger" onclick = "action(this.id)">Anger</button>
+        <button id = "Disgusted" onclick = "action(this.id)">Disgusted</button>
+        <button id = "Crying" onclick = "action(this.id)">Crying</button>
+        <button id = "Sadness" onclick = "action(this.id)">Sadness</button>
+        
+        
+    </div>
+
+    <div><button id = "save-btn" onclick = "save()", onclick = "JSONtobit()">Finish</button></div>
+
+    <p id = "actions"></p>
+
+</body>
+</html>

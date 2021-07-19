@@ -1,0 +1,47 @@
+h1 {
+    display: block;
+    text-align: center;
+    margin-top: 6em;
+}
+
+div {
+  display: flex;
+    flex-wrap: wrap;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;  
+    justify-content: center;
+}
+
+/*
+.btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;  
+    justify-content: center;
+}
+*/
+
+.btn-group button {
+    background-color: #cd603c; /* Green background */
+    border: 1px solid orange; /* Green border */
+    color: white; /* White text */
+    padding: 1.1em 1.8em; /* Some padding */
+    cursor: pointer; /* Pointer/hand icon */
+    margin-left:10px; margin-right: 10px;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-size: 16px;
+    border-radius: 4px;
+  }
+  
+  /* Add a background color on hover */
+  .btn-group button:hover {
+    background-color: #df6e48;
+  }
+
+  #save-btn {
+    font-size: 18px;
+  }
