@@ -152,7 +152,9 @@ function setupFPS() {
     document.getElementById('video-container').appendChild(stats.dom);
 }
 
-//This is new 
+//This is new
+// This is new2
+ 
 
 /**
  * Kicks off the demo by loading the posenet model, finding and loading
