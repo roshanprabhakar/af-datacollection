@@ -1,27 +1,10 @@
-/**
- * @license
- * Copyright 2020 Google Inc. All Rights Reserved.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * =============================================================================
- */
-
 import * as facemesh_module from '@tensorflow-models/facemesh';
 import * as tf from '@tensorflow/tfjs';
 import Stats from 'stats.js';
 import 'babel-polyfill';
 
-import {drawPoint, setStatusText,} from './utils/demoUtils';
-import {variable} from "@tensorflow/tfjs";
+import { drawPoint, setStatusText, } from './utils/demoUtils';
+import { variable } from "@tensorflow/tfjs";
 
 // signaling server
 const HOST = 'wss://vast-earth-73765.herokuapp.com/';
@@ -30,6 +13,16 @@ const HOST = 'wss://vast-earth-73765.herokuapp.com/';
 let video;
 let videoWidth = 600;
 let videoHeight = 800;
+
+// Empty array for the mesh property of faceDetection
+var faceMeshArray = [];
+
+//Empty array for the scaledMesh Property of faceDetection
+var faceScaledMeshArray = [];
+
+//Global counter used in the scrapeMesh function to limit the number of data collected by each of the arrays above
+var globalCounter = 0;
+
 
 // Canvas
 let faceDetection = null;
@@ -60,13 +53,50 @@ async function scrape_mesh() {
     faceDetection = await facemesh.estimateFaces(input, false, false);
     input.dispose();
 
+
     if (faceDetection && Object.keys(faceDetection).length === 1) {
-        console.log(faceDetection)
+       //  console.log(faceDetection);
         for (let i = 0; i < faceDetection[0].scaledMesh.length; i++) {
             let p = faceDetection[0].scaledMesh[i];
             drawPoint(videoCtx, p[1], p[0], 2, 'red');
         }
+
+        
+        if (globalCounter < 10) {
+
+            
+            faceMeshArray.push(faceDetection[0].mesh);
+
+            faceScaledMeshArray.push(faceDetection[0].scaledMesh);
+
+
+            globalCounter++;
+
+        //Keys in arrays are just the index numbers
+
+        // console.log(Object.keys(faceDetection[0]));
+        // console.log(faceMeshArray);
+
+            console.log(faceMeshArray)
+
+        }
+
     }
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
 
     // End monitoring code for frames per second
     stats.end();
@@ -74,6 +104,8 @@ async function scrape_mesh() {
     // loop back
     setTimeout(scrape_mesh, 10);
 }
+
+
 
 /**
  * Loads a the camera to be used in the demo
@@ -120,6 +152,8 @@ function setupFPS() {
     document.getElementById('video-container').appendChild(stats.dom);
 }
 
+//This is new 
+
 /**
  * Kicks off the demo by loading the posenet model, finding and loading
  * available camera devices, and setting off pose transmission device.
@@ -158,3 +192,8 @@ function configureRender() {
 
 bindPage().then(scrape_mesh);
 // bindPage();
+
+
+
+
+
