@@ -53,7 +53,7 @@ async function scrape_mesh() {
     faceDetection = await facemesh.estimateFaces(input, false, false);
     input.dispose();
 
-
+// test
     if (faceDetection && Object.keys(faceDetection).length === 1) {
        //  console.log(faceDetection);
         for (let i = 0; i < faceDetection[0].scaledMesh.length; i++) {
