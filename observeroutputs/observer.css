@@ -26,7 +26,7 @@ div {
 
 .btn-group button {
     background-color: #cd603c; /* Green background */
-    border: 1px solid orange; /* Green border */
+    border: 1px solid grey; /* Green border */
     color: white; /* White text */
     padding: 1.1em 1.8em; /* Some padding */
     cursor: pointer; /* Pointer/hand icon */

@@ -25,6 +25,7 @@ function action(clicked_id) {
 }
 
 
+
 // when "finish" button is pressed, a text file containing JSON list is downloaded
 
 /*
