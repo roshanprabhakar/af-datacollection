@@ -3,8 +3,66 @@ import * as tf from '@tensorflow/tfjs';
 import Stats from 'stats.js';
 import 'babel-polyfill';
 
+
 import { drawPoint, setStatusText, } from './utils/demoUtils';
 import { variable } from "@tensorflow/tfjs";
+
+
+
+
+
+
+//Defines a function for string to array buffer conversion
+// function str2ab(str) {
+//     var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
+
+//     var bufView = new Int16Array(buf);
+//     for (var i = 0, strLen = str.length; i < strLen; i++) {
+//         bufView[i] = str.charCodeAt(i);
+
+//         // console.log(buf.byteLength);
+//     }
+//     return buf;
+// }
+
+
+
+
+
+// function str2ab2(str) {
+//     var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
+//     //Would I use an Int32Array
+//     var bufView = new Int8Array(buf);
+//     for (var i = 0, strLen = str.length; i < strLen; i++) {
+//         bufView[i] = str.charCodeAt(i);
+//     }
+//     return buf;
+// }
+
+
+
+
+
+
+//Defines a function for array buffer to string conversion
+// function ab2str(buf) {
+//     return String.fromCharCode.apply(null, new Int32Array(buf));
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // signaling server
 const HOST = 'wss://vast-earth-73765.herokuapp.com/';
@@ -14,6 +72,10 @@ let video;
 let videoWidth = 600;
 let videoHeight = 800;
 
+
+var x = 0;
+
+
 // Empty array for the mesh property of faceDetection
 var faceMeshArray = [];
 
@@ -22,6 +84,32 @@ var faceScaledMeshArray = [];
 
 //Global counter used in the scrapeMesh function to limit the number of data collected by each of the arrays above
 var globalCounter = 0;
+
+//Byte Data {
+
+
+
+//Temporary storage for buf variable
+var meshByteData = [];
+var scaledMeshByteData = [];
+
+//Counter variables for byteData
+var k = 0;
+var j = 0;
+
+
+//Temporary Storage for new string from Byte Array
+var meshStringData = [];
+var scaledMeshStringData = [];
+
+
+//Byte Data }
+
+
+
+
+
+
 
 
 // Canvas
@@ -53,44 +141,80 @@ async function scrape_mesh() {
     faceDetection = await facemesh.estimateFaces(input, false, false);
     input.dispose();
 
-// test
+    // test
     if (faceDetection && Object.keys(faceDetection).length === 1) {
-       //  console.log(faceDetection);
+        //  console.log(faceDetection);
         for (let i = 0; i < faceDetection[0].scaledMesh.length; i++) {
             let p = faceDetection[0].scaledMesh[i];
             drawPoint(videoCtx, p[1], p[0], 2, 'red');
         }
 
-        
-        if (globalCounter < 10) {
 
-            
+
+
+
+
+
+        if (globalCounter < 12) {
+
+
             faceMeshArray.push(faceDetection[0].mesh);
-
             faceScaledMeshArray.push(faceDetection[0].scaledMesh);
-
 
             globalCounter++;
 
-        //Keys in arrays are just the index numbers
 
-        // console.log(Object.keys(faceDetection[0]));
-        // console.log(faceMeshArray);
+            // String to Byte Array Data {
 
-            console.log(faceMeshArray)
+            // meshByteData[k] = str2ab(faceMeshArray[k]);
+            // k++;
 
+            // scaledMeshByteData[j] = str2ab2(JSON.stringify(faceScaledMeshArray[j]));
+            // j++
         }
 
-    }
 
 
 
+
+
+        // while (x < faceMeshArray.length) {
+        //     faceMeshArray[x] = Number.parseFloat(faceMeshArray[x]).toFixed(3);
+
+        //     x++
+
+
+
+        // }
+
+
+
+        let meshBuffer = new ArrayBuffer(12); 
+
+
+
+        var meshBufferView = new Float32Array(meshBuffer);
 
     
+        for (let i = 0; i < 12; i++) {
+            
+
+            meshBufferView[i] =  faceMeshArray[i];
 
 
 
 
+
+
+          }
+
+
+          console.log(meshBufferView);
+         
+
+
+
+    }
 
 
 
@@ -104,6 +228,54 @@ async function scrape_mesh() {
     // loop back
     setTimeout(scrape_mesh, 10);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
