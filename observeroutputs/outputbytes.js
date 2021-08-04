@@ -1,6 +1,3 @@
-var buffer;
-var dv1;
-var key;
 var outputarr = [];
 var binaryarr = [];
 var binarystr = "";
@@ -8,10 +5,11 @@ var binarystr2 = "";
 var binaryascii = "";
 
 function JSONtobuffer() {
-    binaryarr = "";
-    outputarr = [];
-    binaryarr = [];
-    binaryascii = "";
+    var outputarr = [];
+    var binaryarr = [];
+    var binarystr = "";
+    var binaryascii = "";
+
     for(let i = 0; i < JSONlength; i++) {
         outputarr.push(actionkey(listJSON[i].action));
         outputarr.push(listJSON[i].timestamp);
@@ -19,16 +17,15 @@ function JSONtobuffer() {
 
     for(let i = 0; i < outputarr.length; i++) {
         binaryarr.push((outputarr[i].toString(2) + ""));
-        binarystr += (outputarr[i].toString(2) + " ");
     }
 
     binaryarr = separate(binaryarr);
     for(let z = 0; z < binaryarr.length-1; z++) {
-        binarystr2 += binaryarr[z] + " ";
+        binarystr += binaryarr[z] + " ";
     }
-    binarystr2 += binaryarr[binaryarr.length-1];
+    binarystr += binaryarr[binaryarr.length-1];
 
-    for (let a = 0; a < binarystr2.length; a++) {
+    for (let a = 0; a < binarystr.length; a++) {
         binaryascii += asciichar(binaryarr[a]);
     }
     
@@ -37,9 +34,6 @@ function JSONtobuffer() {
     var blob = new Blob([random], {type: "text/plain;charset=utf-8"});
     saveAs(blob, "outputs.txt");
 
-    console.log(binarystr);
-    console.log(binaryarr);
-    console.log(dido);
     console.log(binarystr2);
     console.log(binaryascii);
 }
@@ -50,33 +44,36 @@ function actionkey(action) {
         case "Happiness":
             key = 1;
             break;
-        case "Laughing":
+        case "Sadness":
             key = 2;
             break;
-        case "Applause":
+        case "Fear":
             key = 3;
             break;
-        case "Surprise":
+        case "Disgust":
             key = 4;
             break;
-        case "Booing":
+        case "Anger":
             key = 5;
             break;
-        case "Stomping":
+        case "Contempt":
             key = 6;
             break;
-        case "Anger":
+        case "Surprise":
             key = 7;
-            break;
-        case "Disgusted":
+        case "Laughing":
             key = 8;
             break;
-        case "Crying":
+        case "Applause":
             key = 9;
             break;
-        case "Sadness":
+        case "Booing":
             key = 10;
             break;
+        case "Crying":
+            key = 11;
+            break;
+        
     }
     return key;
 }
@@ -495,8 +492,63 @@ function asciichar(bin) {
         case "1111111":
             char = "DEL";
             break;
+    }
+    return char;
+}
 
-        /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ASCII table 
+
+/*
         case "10000000":
             char = ;
             break;
@@ -882,61 +934,6 @@ function asciichar(bin) {
             char = ;
             break;
         */
-    }
-    return char;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ASCII table 
 
 
 /*

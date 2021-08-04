@@ -22,6 +22,8 @@ function action(clicked_id) {
     document.getElementById("actions").innerHTML = list;
 
     JSONlength += 1;
+    
+    console.log(listJSON);
 }
 
 

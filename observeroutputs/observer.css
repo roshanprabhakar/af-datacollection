@@ -1,7 +1,21 @@
+body {
+  background-color: rgb(196, 196, 196);
+}
+
+
 h1 {
     display: block;
     text-align: center;
-    margin-top: 6em;
+    margin-top: 1em;
+}
+#video {
+  margin: 0; 
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: rotateY(180deg);
+
 }
 
 div {
