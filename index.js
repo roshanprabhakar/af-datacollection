@@ -6,55 +6,7 @@ import 'babel-polyfill';
 
 import { drawPoint, setStatusText, } from './utils/demoUtils';
 import { variable } from "@tensorflow/tfjs";
-
-
-
-
-
-
-//Defines a function for string to array buffer conversion
-// function str2ab(str) {
-//     var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-
-//     var bufView = new Int16Array(buf);
-//     for (var i = 0, strLen = str.length; i < strLen; i++) {
-//         bufView[i] = str.charCodeAt(i);
-
-//         // console.log(buf.byteLength);
-//     }
-//     return buf;
-// }
-
-
-
-
-
-// function str2ab2(str) {
-//     var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-//     //Would I use an Int32Array
-//     var bufView = new Int8Array(buf);
-//     for (var i = 0, strLen = str.length; i < strLen; i++) {
-//         bufView[i] = str.charCodeAt(i);
-//     }
-//     return buf;
-// }
-
-
-
-
-
-
-//Defines a function for array buffer to string conversion
-// function ab2str(buf) {
-//     return String.fromCharCode.apply(null, new Int32Array(buf));
-// }
-
-
-
-
-
-
-
+import { validateConfig } from 'face-api.js';
 
 
 
@@ -75,6 +27,8 @@ let videoHeight = 800;
 
 var x = 0;
 
+//Packet Array
+var packetArray = [];
 
 // Empty array for the mesh property of faceDetection
 var faceMeshArray = [];
@@ -84,6 +38,8 @@ var faceScaledMeshArray = [];
 
 //Global counter used in the scrapeMesh function to limit the number of data collected by each of the arrays above
 var globalCounter = 0;
+
+var packetCounter = 0;
 
 //Byte Data {
 
@@ -129,6 +85,9 @@ const videoCtx = canvas.getContext('2d');
 
 async function scrape_mesh() {
 
+    if (packetArray.length >= 100) return;
+    
+
     // draw video
     videoCtx.save();
     videoCtx.scale(-1, 1);
@@ -151,74 +110,67 @@ async function scrape_mesh() {
 
 
 
+        if (globalCounter < 10) {
 
-
-
-
-        if (globalCounter < 12) {
-
-
+            //Push both Mesh and Scaled Mesh data to an empty array
             faceMeshArray.push(faceDetection[0].mesh);
             faceScaledMeshArray.push(faceDetection[0].scaledMesh);
 
             globalCounter++;
 
+        } else if (globalCounter === 10) {
 
-            // String to Byte Array Data {
+            // buffer for 10 frames
+            var meshBuffer = new ArrayBuffer(56160); //4 * 3 * 468 * 10
+            var meshBufferView = new Float32Array(meshBuffer); //meshBuffer divided by 4
 
-            // meshByteData[k] = str2ab(faceMeshArray[k]);
-            // k++;
+            // write all 10 frames to meshBuffer
+            for (let frame = 0; frame < 10; frame++) {
+                for (let point = 0; point < 468; point++) {
+                    for (let dimension = 0; dimension < 3; dimension++) {
 
-            // scaledMeshByteData[j] = str2ab2(JSON.stringify(faceScaledMeshArray[j]));
-            // j++
-        }
-
-
-
-
-
-
-        // while (x < faceMeshArray.length) {
-        //     faceMeshArray[x] = Number.parseFloat(faceMeshArray[x]).toFixed(3);
-
-        //     x++
+                        meshBufferView[frame * 468 * 3 + point * 3 + dimension] = faceMeshArray[frame][point][dimension];
+                    }
+                }
+            }
 
 
-
-        // }
-
-
-
-        let meshBuffer = new ArrayBuffer(12); 
-
-
-
-        var meshBufferView = new Float32Array(meshBuffer);
-
-    
-        for (let i = 0; i < 12; i++) {
+            //timestamp @ collection completion
+            var timeBuffer = new ArrayBuffer(8);
+            var timeBufferView = new Float64Array(timeBuffer); //length 1 view
+            timeBufferView[0] = Date.now();
             
-
-            meshBufferView[i] =  faceMeshArray[i];
-
+            // console.log(timeBufferView.length); // = 1
 
 
 
+            //packet buffer
+            var meshPacketBuffer = new ArrayBuffer(timeBuffer.length + meshBuffer.length); 
+            // console.log(meshPacketBuffer.length); // = undefined when it is timeBuffer.length + 56160
+            var meshPacketBufferView = new Int8Array(meshPacketBuffer); 
+
+            //  console.log(meshPacketBufferView.length); // = 0
+
+            //write timestamp bytes to packet
+            timeBufferView = new Int8Array(timeBuffer); //length 8 view
+            for (let i = 0; i < 8; i++) {
+                meshPacketBufferView[i] = timeBufferView[i];
 
 
-          }
+            }
+            
+            //write frame data to packet
+            meshBufferView = new Int8Array(meshBuffer);
+            for (let i = 0; i < 56160; i++) {
+                meshPacketBufferView[i + 8] = meshBufferView[i];
+                // console.log(meshPacketBufferView[i+8]);
 
+            }
 
-          console.log(meshBufferView);
-         
-
-
-
+            packetArray.push(meshPacketBuffer);
+            // console.log(meshPacketBufferView.length);
+        }
     }
-
-
-
-
 
 
 
@@ -328,6 +280,7 @@ function setupFPS() {
  * Kicks off the demo by loading the posenet model, finding and loading
  * available camera devices, and setting off pose transmission device.
  */
+
 export async function bindPage() {
     // toggleLoadingUI(true);
     setStatusText('Loading FaceMesh model...');
