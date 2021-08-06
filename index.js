@@ -12,10 +12,6 @@ import { validateConfig } from 'face-api.js';
 
 
 
-
-
-
-
 // signaling server
 const HOST = 'wss://vast-earth-73765.herokuapp.com/';
 
@@ -25,7 +21,6 @@ let videoWidth = 600;
 let videoHeight = 800;
 
 
-var x = 0;
 
 //Packet Array
 var packetArray = [];
@@ -38,30 +33,6 @@ var faceScaledMeshArray = [];
 
 //Global counter used in the scrapeMesh function to limit the number of data collected by each of the arrays above
 var globalCounter = 0;
-
-var packetCounter = 0;
-
-//Byte Data {
-
-
-
-//Temporary storage for buf variable
-var meshByteData = [];
-var scaledMeshByteData = [];
-
-//Counter variables for byteData
-var k = 0;
-var j = 0;
-
-
-//Temporary Storage for new string from Byte Array
-var meshStringData = [];
-var scaledMeshStringData = [];
-
-
-//Byte Data }
-
-
 
 
 
@@ -86,7 +57,7 @@ const videoCtx = canvas.getContext('2d');
 async function scrape_mesh() {
 
     if (packetArray.length >= 100) return;
-    
+
 
     // draw video
     videoCtx.save();
@@ -101,6 +72,7 @@ async function scrape_mesh() {
     input.dispose();
 
     // test
+    
     if (faceDetection && Object.keys(faceDetection).length === 1) {
         //  console.log(faceDetection);
         for (let i = 0; i < faceDetection[0].scaledMesh.length; i++) {
@@ -108,7 +80,9 @@ async function scrape_mesh() {
             drawPoint(videoCtx, p[1], p[0], 2, 'red');
         }
 
+//  console.log((JSON.stringify(faceDetection[0].mesh)).length);
 
+ 
 
         if (globalCounter < 10) {
 
@@ -139,15 +113,14 @@ async function scrape_mesh() {
             var timeBuffer = new ArrayBuffer(8);
             var timeBufferView = new Float64Array(timeBuffer); //length 1 view
             timeBufferView[0] = Date.now();
-            
+
             // console.log(timeBufferView.length); // = 1
 
 
 
             //packet buffer
-            var meshPacketBuffer = new ArrayBuffer(timeBuffer.length + meshBuffer.length); 
-            // console.log(meshPacketBuffer.length); // = undefined when it is timeBuffer.length + 56160
-            var meshPacketBufferView = new Int8Array(meshPacketBuffer); 
+            var meshPacketBuffer = new ArrayBuffer(timeBuffer.byteLength + meshBuffer.byteLength);
+            var meshPacketBufferView = new Int8Array(meshPacketBuffer);
 
             //  console.log(meshPacketBufferView.length); // = 0
 
@@ -158,7 +131,7 @@ async function scrape_mesh() {
 
 
             }
-            
+
             //write frame data to packet
             meshBufferView = new Int8Array(meshBuffer);
             for (let i = 0; i < 56160; i++) {
@@ -168,10 +141,8 @@ async function scrape_mesh() {
             }
 
             packetArray.push(meshPacketBuffer);
-            // console.log(meshPacketBufferView.length);
         }
     }
-
 
 
     // End monitoring code for frames per second
@@ -180,55 +151,6 @@ async function scrape_mesh() {
     // loop back
     setTimeout(scrape_mesh, 10);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**
