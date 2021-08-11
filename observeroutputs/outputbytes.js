@@ -7,26 +7,34 @@ var binaryascii = "";
 function JSONtobuffer() {
     var outputarr = [];
     var binaryarr = [];
+    var binaryarrmod = [];
     var binarystr = "";
-    var binaryascii = "";
+    var binaryascii = [];
 
     for(let i = 0; i < JSONlength; i++) {
         outputarr.push(actionkey(listJSON[i].action));
         outputarr.push(listJSON[i].timestamp);
     }
+    
+    console.log(outputarr);
 
     for(let i = 0; i < outputarr.length; i++) {
         binaryarr.push((outputarr[i].toString(2) + ""));
     }
-
-    binaryarr = separate(binaryarr);
-    for(let z = 0; z < binaryarr.length-1; z++) {
-        binarystr += binaryarr[z] + " ";
+    console.log(binaryarr);
+    for(let y = 0; y < binaryarr.length; y++) {
+        binaryarrmod = binaryarrmod.concat(separate2(binaryarr[y]))
     }
-    binarystr += binaryarr[binaryarr.length-1];
+    console.log(binaryarrmod);
 
-    for (let a = 0; a < binarystr.length; a++) {
-        binaryascii += asciichar(binaryarr[a]);
+    for(let z = 0; z < binaryarrmod.length-1; z++) {
+        binarystr += binaryarrmod[z] + " ";
+    }
+    binarystr += binaryarrmod[binaryarrmod.length-1];
+    
+
+    for (let a = 0; a < binaryarrmod.length; a++) {
+        binaryascii.push(asciichar(binaryarrmod[a]));
     }
     
 
@@ -78,35 +86,35 @@ function actionkey(action) {
     return key;
 }
 
-function separate(arr) {
-    var random = [];
 
-    for(let i = 0; i < arr.length; i++) {
-        var binlength = arr[i].length;
-        var bin = "";
-        var fill = "";
-        if (binlength <= 7) {
-            for(let y = 0; y < 7-binlength; y++) {
-                fill += "0";
-            }
-            random.push(fill + arr[i]);
-        } else {
-            bin = arr[i];
-            for(let x = 0; x < binlength; x+=7) {
-                if(bin.length >= 7) {
-                    random.push(arr[i].substr(x, x+7));
-                    bin = bin.substr(7);
-                } else {
-                    for(let y = 0; y < 7-bin.length; y++) {
-                        fill += "0";
-                    }
-                    random.push(fill + bin);
-                }
+
+function separate2(str) {
+    var random2 = [];
+
+    if(str.length < 8) {
+        while(str.length < 7)
+                 {
+                     str = "0" + str;
+                 }
+        random2.push(str);
+    } else {
+        while(str.length > 0) {
+            if(str.length >= 7) {
+                random2.push(str.substr(0,7))
+                str = str.substr(7);
+            } else {
+                while(str.length < 7)
+                 {
+                     str = "0" + str;
+                 }
+                random2.push(str)
+                str = "";
             }
         }
     }
-    return random;
-}
+
+    return random2;
+} 
 
 function asciichar(bin) {
     var char = "";
