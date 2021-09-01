@@ -12,6 +12,9 @@ import { validateConfig } from 'face-api.js';
 
 
 
+
+
+
 // signaling server
 const HOST = 'wss://vast-earth-73765.herokuapp.com/';
 
@@ -29,7 +32,7 @@ var packetArray = [];
 var faceMeshArray = [];
 
 //Empty array for the scaledMesh Property of faceDetection
-var faceScaledMeshArray = [];
+var scaledFaceMeshArray = [];
 
 //Global counter used in the scrapeMesh function to limit the number of data collected by each of the arrays above
 var globalCounter = 0;
@@ -56,7 +59,7 @@ const videoCtx = canvas.getContext('2d');
 
 async function scrape_mesh() {
 
-    if (packetArray.length >= 100) return;
+    // if (packetArray.length >= 100) return;
 
 
     // draw video
@@ -80,7 +83,6 @@ async function scrape_mesh() {
             drawPoint(videoCtx, p[1], p[0], 2, 'red');
         }
 
-//  console.log((JSON.stringify(faceDetection[0].mesh)).length);
 
  
 
@@ -88,7 +90,7 @@ async function scrape_mesh() {
 
             //Push both Mesh and Scaled Mesh data to an empty array
             faceMeshArray.push(faceDetection[0].mesh);
-            faceScaledMeshArray.push(faceDetection[0].scaledMesh);
+            scaledFaceMeshArray.push(faceDetection[0].scaledMesh);
 
             globalCounter++;
 
@@ -114,7 +116,6 @@ async function scrape_mesh() {
             var timeBufferView = new Float64Array(timeBuffer); //length 1 view
             timeBufferView[0] = Date.now();
 
-            // console.log(timeBufferView.length); // = 1
 
 
 
@@ -122,25 +123,33 @@ async function scrape_mesh() {
             var meshPacketBuffer = new ArrayBuffer(timeBuffer.byteLength + meshBuffer.byteLength);
             var meshPacketBufferView = new Int8Array(meshPacketBuffer);
 
-            //  console.log(meshPacketBufferView.length); // = 0
 
             //write timestamp bytes to packet
             timeBufferView = new Int8Array(timeBuffer); //length 8 view
             for (let i = 0; i < 8; i++) {
                 meshPacketBufferView[i] = timeBufferView[i];
-
-
             }
 
             //write frame data to packet
             meshBufferView = new Int8Array(meshBuffer);
             for (let i = 0; i < 56160; i++) {
                 meshPacketBufferView[i + 8] = meshBufferView[i];
-                // console.log(meshPacketBufferView[i+8]);
-
             }
 
-            packetArray.push(meshPacketBuffer);
+            // Push concatenated meshBufferView and timestamp array buffer together to a normal array
+            packetArray.push(meshPacketBufferView);
+
+            // var packetFile = [];
+            // packetFile.push(JSON.stringify(packetArray));
+            // document.getElementById("packet").value = packetFile;
+          
+//To store an array in a file it has to keep track of the indices
+
+//Directly create the string, loop through the array, for every 2 bytes of the buffer add one character to the string
+
+//What determines the character is the 2 byte representation in UTF - 16 
+
+
         }
     }
 
