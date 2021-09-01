@@ -4,39 +4,102 @@ var binarystr = "";
 var binarystr2 = "";
 var binaryascii = "";
 
-function JSONtobuffer() {
-    var outputarr = [];
-    var binaryarr = [];
-    var binaryarrmod = [];
-    var binarystr = "";
-    var binaryascii = [];
+/*
+where *(n) is the following operation on radix 10 integer n:
+convert to binary, assign all digits to 1
 
-    for(let i = 0; i < JSONlength; i++) {
+we assume timestamp values all less than *(12 * 60 * 60 * 1000) ms (arbitrary) = 26 bits
+we enforce 0 < action id ≤ 11, all action id less than *(11) = 4 bits
+ */
+function toBuffer2() {
+
+    /*
+    holds the cumulative buffer as a string. k.length % 30 = 0
+    for every group of 30 bits:
+    bits 0 to 25 hold the timestamp
+    bits 26-29 hold the action id
+     */
+    let k = "";
+
+    for (let i = 0; i < JSONlength; i++) {
+
+        //retrieve timestamp for entry i
+        let timestamp = listJSON[i].timestamp.toString(2);
+
+        //enforce length 26 bits for all timestamp values
+        while (timestamp.length < 26) {
+            timestamp = '0' + timestamp;
+        }
+
+        //retrieve action for entry i
+        let action = actionkey(listJSON[i].action).toString(2);
+
+        //enforce length 4 bits for all action id
+        while (action.length < 4) {
+            action = '0' + action;
+        }
+
+        /*
+        we add the '00' at the beginning to k length 32, exactly convertable to 2 utf16 characters
+         */
+        k += '00' + timestamp + action;
+    }
+
+    //split k into utf16 parseable bytes held in f
+    let f = [];
+    for (let i = 0; i < k.length; i += 16) {
+        /*
+        no difference between string representation and int representation (i.e. '0000100000000000' and 2048)
+        they both represent the same byte/ascii character
+         */
+        f.push(parseInt(k.substr(i, 16), 2));
+    }
+
+    //convert array of 16bit numbers to a utf16 string
+    let final_text = "";
+    for (let i = 0; i < f.length; i++) {
+        final_text += String.fromCharCode(f[i]);
+    }
+
+    //write final_text to saveable file
+    saveAs(new Blob([final_text], {type: "text/plain;charset=utf-16"}), "observer.txt");
+}
+
+
+
+function JSONtobuffer() {
+    outputarr = [];
+    binaryarr = [];
+    binaryarrmod = [];
+    binarystr = "";
+    binaryascii = [];
+
+    for (let i = 0; i < JSONlength; i++) {
         outputarr.push(actionkey(listJSON[i].action));
         outputarr.push(listJSON[i].timestamp);
     }
-    
     console.log(outputarr);
 
-    for(let i = 0; i < outputarr.length; i++) {
+    for (let i = 0; i < outputarr.length; i++) {
         binaryarr.push((outputarr[i].toString(2) + ""));
     }
     console.log(binaryarr);
-    for(let y = 0; y < binaryarr.length; y++) {
+
+    for (let y = 0; y < binaryarr.length; y++) {
         binaryarrmod = binaryarrmod.concat(separate2(binaryarr[y]))
     }
+    console.log("binaryarrmod");
     console.log(binaryarrmod);
 
-    for(let z = 0; z < binaryarrmod.length-1; z++) {
+    for (let z = 0; z < binaryarrmod.length - 1; z++) {
         binarystr += binaryarrmod[z] + " ";
     }
-    binarystr += binaryarrmod[binaryarrmod.length-1];
-    
+    binarystr += binaryarrmod[binaryarrmod.length - 1];
+
 
     for (let a = 0; a < binaryarrmod.length; a++) {
         binaryascii.push(asciichar(binaryarrmod[a]));
     }
-    
 
     var random = JSON.stringify(binaryascii);
     var blob = new Blob([random], {type: "text/plain;charset=utf-8"});
@@ -81,32 +144,29 @@ function actionkey(action) {
         case "Crying":
             key = 11;
             break;
-        
+
     }
     return key;
 }
 
 
-
 function separate2(str) {
     var random2 = [];
 
-    if(str.length < 8) {
-        while(str.length < 7)
-                 {
-                     str = "0" + str;
-                 }
+    if (str.length < 8) {
+        while (str.length < 7) {
+            str = "0" + str;
+        }
         random2.push(str);
     } else {
-        while(str.length > 0) {
-            if(str.length >= 7) {
-                random2.push(str.substr(0,7))
+        while (str.length > 0) {
+            if (str.length >= 7) {
+                random2.push(str.substr(0, 7))
                 str = str.substr(7);
             } else {
-                while(str.length < 7)
-                 {
-                     str = "0" + str;
-                 }
+                while (str.length < 7) {
+                    str = "0" + str;
+                }
                 random2.push(str)
                 str = "";
             }
@@ -114,7 +174,7 @@ function separate2(str) {
     }
 
     return random2;
-} 
+}
 
 function asciichar(bin) {
     var char = "";
@@ -138,7 +198,7 @@ function asciichar(bin) {
             char = "ACK";
             break;
         case "0000111":
-            char ="BEL";
+            char = "BEL";
             break;
         case "0001000":
             char = "BS";
@@ -505,9 +565,6 @@ function asciichar(bin) {
 }
 
 
-
-
-
 /*
 
 ARRAY buffers
@@ -572,7 +629,7 @@ function JSONtobit() {
 
     actionbuffer = new ArrayBuffer(JSONlength * 8); //Array buffer for actions
     dv2 = new BigInt64Array(actionbuffer); //dataview from actionbuffer
-    
+
     for (let i = 0; i < dv1.length; i++) {
         dv1[i] = listJSON[i].timestamp;
         // dv2[i] = listJSON[i].action;
@@ -588,7 +645,7 @@ function stringbuff(str) {
         bufView[i] = str.charCodeAt(i);
     }
     return buf;
-    
+
 }
 
 function numbinary() {
