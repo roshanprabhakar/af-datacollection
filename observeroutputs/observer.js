@@ -1,27 +1,17 @@
-var outputdata = []; //observed outputs and time stap array format
+
 var list = []; //list of actiondata; 2D array format
-var timestart;
 var JSONlength = 0;
-
-//time when page loads
-window.onload = () => {
-timestart = Date.now();
-}
-
-var outputdataJSON = {}; //observed outputs and time stap JSON format
-var listJSON = []; //list of actiondata of JSON
+var listJSON = []; //list of JSON actiondata
 
 //add actiondata to list
 function action(clicked_id) {
 
-    listJSON.push({'action' : clicked_id, 'timestamp' : parseInt(Date.now() - timestart)});
-    list.push(clicked_id + " " + (Date.now()-timestart));
+    listJSON.push({'action' : clicked_id, 'timestamp' : Date.now()});
+    list.push(`${clicked_id} ${Date.now()}`);
     JSONlength += 1;
 
     document.getElementById("actions").innerHTML = list;
-    // console.log(listJSON);
 }
-
 
 /*
 function save() {
