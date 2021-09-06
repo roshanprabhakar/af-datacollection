@@ -39,9 +39,6 @@ var globalCounter = 0;
 
 
 
-
-
-
 // Canvas
 let faceDetection = null;
 let illustration = null;
@@ -59,7 +56,7 @@ const videoCtx = canvas.getContext('2d');
 
 async function scrape_mesh() {
 
-    // if (packetArray.length >= 100) return;
+    if (packetArray.length >= 100) return;
 
 
     // draw video
@@ -74,7 +71,6 @@ async function scrape_mesh() {
     faceDetection = await facemesh.estimateFaces(input, false, false);
     input.dispose();
 
-    // test
     
     if (faceDetection && Object.keys(faceDetection).length === 1) {
         //  console.log(faceDetection);
@@ -116,13 +112,9 @@ async function scrape_mesh() {
             var timeBufferView = new Float64Array(timeBuffer); //length 1 view
             timeBufferView[0] = Date.now();
 
-
-
-
             //packet buffer
             var meshPacketBuffer = new ArrayBuffer(timeBuffer.byteLength + meshBuffer.byteLength);
             var meshPacketBufferView = new Int8Array(meshPacketBuffer);
-
 
             //write timestamp bytes to packet
             timeBufferView = new Int8Array(timeBuffer); //length 8 view
@@ -138,21 +130,8 @@ async function scrape_mesh() {
 
             // Push concatenated meshBufferView and timestamp array buffer together to a normal array
             packetArray.push(meshPacketBufferView);
-
-            // var packetFile = [];
-            // packetFile.push(JSON.stringify(packetArray));
-            // document.getElementById("packet").value = packetFile;
-          
-//To store an array in a file it has to keep track of the indices
-
-//Directly create the string, loop through the array, for every 2 bytes of the buffer add one character to the string
-
-//What determines the character is the 2 byte representation in UTF - 16 
-
-
         }
     }
-
 
     // End monitoring code for frames per second
     stats.end();
@@ -246,7 +225,5 @@ function configureRender() {
 
 bindPage().then(scrape_mesh);
 // bindPage();
-
-//test test test test test test 
 
 
