@@ -15,6 +15,7 @@ import { validateConfig } from 'face-api.js';
 
 
 
+
 // signaling server
 const HOST = 'wss://vast-earth-73765.herokuapp.com/';
 
