@@ -4,6 +4,7 @@ var binarystr = "";
 var binarystr2 = "";
 var binaryascii = "";
 
+
 function toBuffer2() {
 
     /*
@@ -15,22 +16,28 @@ function toBuffer2() {
     let k = "";
 
     for (let i = 0; i < JSONlength; i++) {
-    
-        //retrieve timestamp for entry 1
+
+        //retrieve timestamp for entry i
         let timestamp = listJSON[i].timestamp.toString(2);
 
-        //enforce length 26 bits for all timestamp values 
-        while(timestamp.length < 26) {
-            timestamp = "0" + timestamp;
+        //enforce length 26 bits for all timestamp values
+        while (timestamp.length < 26) {
+            timestamp = '0' + timestamp;
         }
 
         //retrieve action for entry i
         let action = actionkey(listJSON[i].action);
 
-        // we add the "00" at the beginning to k length 32, exactly convertable to 2 utf16 characters
-        k += "00" + timestamp + action;
+        //enforce length 4 bits for all action id
+        while (action.length < 4) {
+            action = '0' + action;
+        }
+
+        /*
+        we add the '00' at the beginning to k length 32, exactly convertable to 2 utf16 characters
+         */
+        k += '00' + timestamp + action;
     }
-    console.log(k);
 
     //split k into utf16 parseable bytes held in f
     let f = [];
@@ -47,11 +54,11 @@ function toBuffer2() {
     for (let i = 0; i < f.length; i++) {
         final_text += String.fromCharCode(f[i]);
     }
-    console.log(final_text);
 
     //write final_text to saveable file
     saveAs(new Blob([final_text], {type: "text/plain;charset=utf-16"}), "observer.txt");
 }
+
 
 
 function actionkey(action) {
@@ -90,7 +97,7 @@ function actionkey(action) {
         case "Crying":
             key = "1011";
             break;
-        
+
     }
     return key;
 }
