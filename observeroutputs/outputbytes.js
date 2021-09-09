@@ -1,11 +1,24 @@
-var outputarr = [];
-var binaryarr = [];
-var binarystr = "";
-var binarystr2 = "";
-var binaryascii = "";
+const action_key = new Map([
+    ['Happiness', 0],
+    ['Sadness', 1],
+    ['Fear', 2],
+    ['Disgust', 3],
+    ['Anger', 4],
+    ['Contempt', 5],
+    ['Surprise', 6],
+    ['Laughing', 7],
+    ['Applause', 8],
+    ['Booing', 9],
+    ['Crying', 10],
+]);
 
-
-function toBuffer2() {
+/*
+where *(n) is the following operation on radix 10 integer n:
+convert to binary, assign all digits to 1
+we assume timestamp values all less than *(12 * 60 * 60 * 1000) ms (arbitrary) = 26 bits
+we enforce 0 < action id ≤ 11, all action id less than *(11) = 4 bits
+ */
+function toBuffer() {
 
     /*
     holds the cumulative buffer as a string. k.length % 30 = 0
@@ -26,7 +39,7 @@ function toBuffer2() {
         }
 
         //retrieve action for entry i
-        let action = actionkey(listJSON[i].action);
+        let action = action_key.get(`${listJSON[i].action}`).toString(2);
 
         //enforce length 4 bits for all action id
         while (action.length < 4) {
@@ -58,48 +71,3 @@ function toBuffer2() {
     //write final_text to saveable file
     saveAs(new Blob([final_text], {type: "text/plain;charset=utf-16"}), "observer.txt");
 }
-
-
-
-function actionkey(action) {
-    var key;
-    switch (action) {
-        case "Happiness":
-            key = "0001";
-            break;
-        case "Sadness":
-            key = "0010";
-            break;
-        case "Fear":
-            key = "0011";
-            break;
-        case "Disgust":
-            key = "0100";
-            break;
-        case "Anger":
-            key = "0101";
-            break;
-        case "Contempt":
-            key = "0110";
-            break;
-        case "Surprise":
-            key = "0111";
-            break;
-        case "Laughing":
-            key = "1000";
-            break;
-        case "Applause":
-            key = "1001";
-            break;
-        case "Booing":
-            key = "1010";
-            break;
-        case "Crying":
-            key = "1011";
-            break;
-
-    }
-    return key;
-}
-
-
