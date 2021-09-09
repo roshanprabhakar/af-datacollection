@@ -13,11 +13,12 @@ import { validateConfig } from 'face-api.js';
 
 
 
-
+//this should work now
 
 
 // signaling server
 const HOST = 'wss://vast-earth-73765.herokuapp.com/';
+
 
 // Camera stream video element
 let video;
